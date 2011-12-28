@@ -1,0 +1,66 @@
+
+************** DESCRIPTION
+
+This project contains programs for import GWave waves to Wiab.
+Imported all the waves in which specified user is a participant.
+Wave Id's and wavelet Id's remain same, except domains.
+Domains of Id's and participants are renamed to Wiab server domain.
+Attachments are not imported now.
+
+
+************** DO THE FOLLOWING
+ 
+1) Get sources
+
+ - Check out this project
+	git clone git://github.com/jorkey/WaveImport.git
+ - Check out the source code of Wiab
+	svn co https://svn.apache.org/repos/asf/incubator/wave/trunk
+
+2) Prepare Wiab
+
+ - Copy following file from WaveImport repository to Wiab repository:
+	wave/src/org/waveprotocol/box/server/imp/ImportServlet.java
+   		to
+	src/org/waveprotocol/box/server/imp/ImportServlet.java
+ - Modify Wiab source file /src/org/waveprotocol/box/server/ServerMain.java
+	insert into begin of file line
+		import org.waveprotocol.box.server.imp.ImportServlet;
+	append to method initializeServlets(Injector injector, ServerRpcProvider server) line
+		server.addServlet("/import", ImportServlet.class);
+ - Compile, configure and run Wiab
+
+3) Compile WaveImport
+
+ - Run ant in WaveImport directory
+
+4) Get an OAuth application id
+
+ - Go to https://code.google.com/apis/console/. 
+ - Create a new project.
+ - Click on "API Access" on the left, then "Create an OAuth2.0 client id".
+ - Enter a product name. Leave the logo empty. Click "Next".
+ - Application type: Web application. Next to "Your site or hostname", click on "more options".
+ - Authorized redirect URIs: any.
+ - Authorized JavaScript origins: Delete the text in here.
+ - Click "Create client ID".
+
+5) Export waves from GWave to JSon files
+
+ - Run ./run-export <ClientId> <ClientSecret> <UserId> <Participant> <RefreshToken> <AccessToken> <ExportDir>
+   Parameters are:
+	ClientId - OAuth client id, got at step 4
+	ClientSecret  - client secret, got at step 4
+	UserId - Google unique user Id
+        Participant - GWave participant
+	RefreshToken, AccessTokens - OAuth tokens
+	ExportDir - directory to write export files
+
+6) Import waves to GWave
+
+  - Run ./run-import <WaveServerImportUrl> <WaveServerDomain> <ExportDir>
+	WaveServerImportUrl - URL of import service, for example
+		http://localhost:9898/import
+	WaveServerDomain - domain of Wiab server, for example
+		localhost
+	ExportDir - directory with exported waves
